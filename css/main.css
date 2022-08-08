@@ -1,0 +1,21 @@
+.dialog {
+    position: absolute;
+    background: #bbc2c2;
+    left: 200px;
+    top: 200px;
+    display: none;
+    width: 500px;
+    height: 150px
+}
+
+.update-item-btn {
+    width: 60px;
+    height: 30px;
+    background: blue;
+}
+
+.delete-item-btn {
+    width: 60px;
+    height: 30px;
+    background: red;
+}
