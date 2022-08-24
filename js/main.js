@@ -14,10 +14,11 @@ export function createCard(item) {
     update.classList.add('update-item-btn');
     update.innerHTML = '&#x2699;';
     update.addEventListener('click', () => {
-        editableItem.id = item.id;
+        // editableItem.id = item.id;
 
         firstField.value = item.name;
-        secondField.value = item.surname;
+        secondField.value = item.date_birth;
+        thirdField.value = item.location;
         openDialog(false);
     });
 
@@ -25,8 +26,15 @@ export function createCard(item) {
     del.classList.add('delete-item-btn');
     del.innerHTML = '&#x2717;';
     del.addEventListener('click', () => {
-        deleteData(URL + 'delete/', item.id)
-            .then();
+        deleteData(URL + 'delete/', item.name)
+            .then( () => {
+                getData(URL + 'user')
+                    .then( data => {
+                        console.log(data)
+                        items = data; // todo
+                        redrawDiv(wrapper, items);
+                    })
+            });
     })
 
     card.appendChild(update);
@@ -120,11 +128,10 @@ Array.prototype.triggerEvent = function(eventName, elements) {
     }
 };
 let items = [
-    { id: 1, name: 'HTML', surname: 'img/HTML.png' },
-    { id: 2, name: 'CSS', surname: 'img/CSS.png' },
-    { id: 3, name: 'JavaScript', surname: 'img/JS.png' },
-    { id: 4, name: 'TypeScript', surname: 'img/TS.png' },
-    { id: 5, name: 'Vue', surname: 'img/Vue.png' },
+    { id: 1, name: 'HTML', location: 'img/HTML.png', date_birth: 'img/HTML.png' },
+    { id: 1, name: 'HTML', location: 'img/HTML.png', date_birth: 'img/HTML.png' },
+    { id: 1, name: 'HTML', location: 'img/HTML.png', date_birth: 'img/HTML.png' },
+    { id: 1, name: 'HTML', location: 'img/HTML.png', date_birth: 'img/HTML.png' },
 ];
 
 items.addListener('add', (i, args) => {
@@ -132,7 +139,7 @@ items.addListener('add', (i, args) => {
 });
 
 
-const URL = 'http://127.0.0.1:8000/'
+const URL = 'http://127.0.0.1:16000/'
 
 const dialog = document.querySelector('.dialog');
 const openDialogBtn = document.querySelector('.open-dialog');
@@ -140,7 +147,8 @@ const closeDialogBtn = document.querySelector('.close-dialog');
 const createItemBtn = document.querySelector('.create-item');
 const wrapper = document.querySelector('.my-table');
 let firstField = document.querySelector('.name');
-let secondField = document.querySelector('.surname');
+let secondField = document.querySelector('.date');
+let thirdField = document.querySelector('.location');
 let creatingMode = false;
 let editableItem = { id: undefined, name: undefined, surname: undefined}
 
@@ -154,24 +162,35 @@ closeDialogBtn.addEventListener('click', () => {
 })
 createItemBtn.addEventListener('click', () => {
             if (creatingMode){
-                items.pushWithEvent( { name: firstField.value, image: secondField.value});
-                postData(URL + 'humans/', {'name' : firstField.value, 'surname' : secondField.value})
+                // items.pushWithEvent( { name: firstField.value, date_birth: secondField.value, location: thirdField.value});
+                postData(URL + 'user', { name: firstField.value, date_birth: secondField.value, location: thirdField.value})
                     .then( id => {
-                        console.log(id)
+                        getData(URL + 'user')
+                            .then( data => {
+                                console.log(data)
+                                items = data; // todo
+                                redrawDiv(wrapper, items);
+                            })
+                        closeDialog();
+
                     })
-                closeDialog();
             }
             else {
-                putData(URL + 'humans/',
-                    { id : editableItem.id, 'name' : firstField.value, 'surname' : secondField.value})
+                putData(URL + 'user',
+                    { name: firstField.value, date_birth: secondField.value, location: thirdField.value})
                     .then( () => {
-                        console.log('ddd')
+                        getData(URL + 'user')
+                            .then( data => {
+                                console.log(data)
+                                items = data; // todo
+                                redrawDiv(wrapper, items);
+                            })
+                        closeDialog();
                     })
-                closeDialog();
             }
 });
 
-getData(URL + 'humans/')
+getData(URL + 'user')
     .then( data => {
         console.log(data)
         items = data; // todo
